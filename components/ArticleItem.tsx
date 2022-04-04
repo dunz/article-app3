@@ -1,5 +1,7 @@
 import React, {VFC} from 'react';
 import {Platform, Pressable, StyleSheet, Text, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {MainTabNavigationProp} from '../screens/types';
 
 export interface ArticleItemProps {
   id: number;
@@ -8,8 +10,9 @@ export interface ArticleItemProps {
   username: string;
 }
 export const ArticleItem: VFC<ArticleItemProps> = ({id, title, publishedAt, username}) => {
+  const navigation = useNavigation<MainTabNavigationProp>();
   const onPress = () => {
-    console.log(id);
+    navigation.navigate('Article', {id});
   };
   const formattedDate = new Date(publishedAt).toLocaleString();
 

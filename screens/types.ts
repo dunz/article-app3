@@ -9,10 +9,14 @@ export type MainTabParamList = {
 
 export type MainTabNavigationScreenParams = NavigatorScreenParams<MainTabParamList>;
 export type MainTabNavigationProp = CompositeNavigationProp<RootStackNavigationProp, BottomTabNavigationProp<MainTabParamList>>;
-export type MainTabRouteProp = RouteProp<RootSTackParamList, 'MainTab'>;
+export type MainTabRouteProp = RouteProp<RootStackParamList, 'MainTab'>;
+export type ArticleScreenRouteProp = RouteProp<RootStackParamList, 'Article'>;
 
 /* RootStack */
-export type RootSTackParamList = {
+export type RootStackParamList = {
   MainTab: MainTabNavigationScreenParams;
+  Article: {
+    id: number;
+  };
 };
-export type RootStackNavigationProp = NativeStackNavigationProp<RootSTackParamList>;
+export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
