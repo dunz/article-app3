@@ -1,4 +1,4 @@
 import React, {VFC} from 'react';
-import {View} from 'react-native';
+import {AuthForm} from '../components/AuthForm';
 
-export const RegisterScreen: VFC = () => <View />;
+export const RegisterScreen: VFC = () => <AuthForm isRegister />;
