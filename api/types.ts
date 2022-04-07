@@ -1,3 +1,5 @@
+import {AxiosError} from 'axios';
+
 export interface User {
   id: number;
   username: string;
@@ -33,3 +35,28 @@ export interface AuthResult {
   jwt: string;
   user: User;
 }
+
+type AuthErrorData = {
+  messages: {
+    id: string;
+    message: string;
+  }[];
+}[];
+
+// interface ErrorObject {
+//   id: string;
+//   message: string;
+// }
+//
+// interface AuthErrorData {
+//   messages: ErrorObject[];
+// }
+
+export type AuthError = AxiosError<{
+  statusCode: number;
+  error: string;
+  // message: AuthErrorData[];
+  // data: AuthErrorData[];
+  message: AuthErrorData;
+  data: AuthErrorData;
+}>;
