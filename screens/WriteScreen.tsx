@@ -5,7 +5,7 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {RootStackNavigationProp} from './types';
 import {writeArticle} from '../api/articles';
-import {useMutation, useQueryClient} from 'react-query';
+import {InfiniteData, useMutation, useQueryClient} from 'react-query';
 import {Article} from '../api/types';
 
 export const WriteScreen: VFC = () => {
@@ -19,7 +19,21 @@ export const WriteScreen: VFC = () => {
   const {mutate: write} = useMutation(writeArticle, {
     onSuccess(article) {
       // queryClient.invalidateQueries('articles');
-      queryClient.setQueryData<Article[]>('articles', articles => (articles ?? []).concat(article));
+      // queryClient.setQueryData<Article[]>('articles', articles => (articles ?? []).concat(article));
+      queryClient.setQueryData<InfiniteData<Article[]>>('articles', data => {
+        if (!data) {
+          return {
+            pageParams: [undefined],
+            pages: [[article]],
+          };
+        }
+        const [firstPage, ...rest] = data.pages;
+
+        return {
+          ...data,
+          pages: [[article, ...firstPage], ...rest],
+        };
+      });
       navigation.goBack();
     },
   });
