@@ -6,6 +6,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {RootStackNavigationProp} from './types';
 import {writeArticle} from '../api/articles';
 import {useMutation, useQueryClient} from 'react-query';
+import {Article} from '../api/types';
 
 export const WriteScreen: VFC = () => {
   const {top} = useSafeAreaInsets();
@@ -14,9 +15,11 @@ export const WriteScreen: VFC = () => {
 
   const navigation = useNavigation<RootStackNavigationProp>();
   const queryClient = useQueryClient();
+  // const articles = queryClient.getQueryData<Article[]>('articles') ?? [];
   const {mutate: write} = useMutation(writeArticle, {
-    onSuccess() {
-      queryClient.invalidateQueries('articles');
+    onSuccess(article) {
+      // queryClient.invalidateQueries('articles');
+      queryClient.setQueryData<Article[]>('articles', articles => (articles ?? []).concat(article));
       navigation.goBack();
     },
   });
