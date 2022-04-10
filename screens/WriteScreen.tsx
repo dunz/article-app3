@@ -4,6 +4,8 @@ import {KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput} from '
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {RootStackNavigationProp} from './types';
+import {writeArticle} from '../api/articles';
+import {useMutation} from 'react-query';
 
 export const WriteScreen: VFC = () => {
   const {top} = useSafeAreaInsets();
@@ -11,7 +13,14 @@ export const WriteScreen: VFC = () => {
   const [body, setBody] = useState('');
 
   const navigation = useNavigation<RootStackNavigationProp>();
-  const onSubmit = useCallback(() => {}, []);
+  const {mutate: write} = useMutation(writeArticle, {
+    onSuccess() {
+      navigation.goBack();
+    },
+  });
+  const onSubmit = useCallback(() => {
+    write({title, body});
+  }, [write, title, body]);
 
   useEffect(() => {
     navigation.setOptions({
