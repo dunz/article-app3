@@ -1,11 +1,28 @@
-import React, {useState, VFC} from 'react';
-import {KeyboardAvoidingView, Platform, StyleSheet, TextInput} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useEffect, useState, VFC} from 'react';
+import {KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {RootStackNavigationProp} from './types';
 
 export const WriteScreen: VFC = () => {
   const {top} = useSafeAreaInsets();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+
+  const navigation = useNavigation<RootStackNavigationProp>();
+  const onSubmit = useCallback(() => {}, []);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRightContainerStyle: styles.headerRightContainer,
+      headerRight: () => (
+        <Pressable hitSlop={8} onPress={onSubmit} style={({pressed}) => pressed && styles.headerRightPressed}>
+          <MaterialIcons name="send" color="#2196f3" size={24} />
+        </Pressable>
+      ),
+    });
+  }, [onSubmit, navigation]);
 
   return (
     <SafeAreaView style={styles.block} edges={['bottom']}>
@@ -49,5 +66,11 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     marginTop: 16,
     flex: 1,
+  },
+  headerRightContainer: {
+    marginRight: 16,
+  },
+  headerRightPressed: {
+    opacity: 0.75,
   },
 });
