@@ -1,12 +1,13 @@
 import {client} from './client';
 import {Article} from './types';
 
-export const getArticles = async ({limit = 10, cursor}: {limit?: number; cursor?: number}) => {
+export const getArticles = async ({limit = 10, cursor, prevCursor}: {limit?: number; cursor?: number; prevCursor?: number}) => {
   const response = await client.get<Article[]>('/articles', {
     params: {
       _sort: 'id:DESC',
       _limit: limit,
       id_lt: cursor,
+      id_gt: prevCursor,
     },
   });
   return response.data;

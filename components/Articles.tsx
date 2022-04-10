@@ -1,6 +1,6 @@
 import React, {VFC} from 'react';
 import {Article} from '../api/types';
-import {ActivityIndicator, FlatList, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {ArticleItem} from './ArticleItem';
 import {WriteButton} from './WriteButton';
 
@@ -9,9 +9,11 @@ export interface ArticlesProps {
   showWriteButton?: boolean;
   isFetchingNextPage: boolean;
   fetchNextPage(): void;
+  refresh(): void;
+  isRefreshing: boolean;
 }
 
-export const Articles: VFC<ArticlesProps> = ({articles, showWriteButton, isFetchingNextPage, fetchNextPage}) => {
+export const Articles: VFC<ArticlesProps> = ({articles, showWriteButton, isFetchingNextPage, fetchNextPage, refresh, isRefreshing}) => {
   return (
     <FlatList
       data={articles}
@@ -28,6 +30,7 @@ export const Articles: VFC<ArticlesProps> = ({articles, showWriteButton, isFetch
       )}
       onEndReachedThreshold={0.5}
       onEndReached={fetchNextPage}
+      refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} />}
     />
   );
 };
