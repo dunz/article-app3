@@ -5,6 +5,7 @@ import {useUserState} from '../contexts/UserContext';
 import {useNavigation} from '@react-navigation/native';
 import {RootStackNavigationProp} from '../screens/types';
 import {applyToken} from '../api/client';
+import {authStorage} from '../api/storages/authStorage';
 
 export const useRegister = () => {
   const [, setUser] = useUserState();
@@ -14,6 +15,7 @@ export const useRegister = () => {
     onSuccess(data) {
       setUser(data.user);
       applyToken(data.jwt);
+      authStorage.set(data);
       navigation.pop();
     },
     onError(error: AuthError) {

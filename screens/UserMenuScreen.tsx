@@ -5,6 +5,7 @@ import {MenuItem} from '../components/MenuItem';
 import {RootStackNavigationProp} from './types';
 import {useUserState} from '../contexts/UserContext';
 import {clearToken} from '../api/client';
+import {authStorage} from '../api/storages/authStorage';
 
 export const UserMenuScreen: VFC = () => {
   const navigation = useNavigation<RootStackNavigationProp>();
@@ -15,6 +16,7 @@ export const UserMenuScreen: VFC = () => {
   const onLogout = () => {
     setUser(null);
     clearToken();
+    authStorage.clear();
   };
 
   return (

@@ -1,7 +1,7 @@
 import React, {createContext, FC, useContext, useState} from 'react';
 import {User} from '../api/types';
 
-type UserContextState = [User | null, (user: User | null) => void];
+type UserContextState = [null, (user: User | null) => void];
 
 const UserContext = createContext<UserContextState | null>(null);
 
