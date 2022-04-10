@@ -6,10 +6,12 @@ import {useNavigation} from '@react-navigation/native';
 import {RootStackNavigationProp} from '../screens/types';
 import {applyToken} from '../api/client';
 import {authStorage} from '../api/storages/authStorage';
+import {useInform} from './useInform';
 
 export const useLogin = () => {
   const [, setUser] = useUserState();
   const navigation = useNavigation<RootStackNavigationProp>();
+  const inform = useInform();
 
   return useMutation(login, {
     onSuccess(data) {
@@ -19,7 +21,11 @@ export const useLogin = () => {
       navigation.pop();
     },
     onError(error: AuthError) {
-      console.error(error);
+      const message = error?.response?.data?.data?.[0]?.messages[0].message ?? '로그인 실패';
+      inform({
+        title: '오류',
+        message,
+      });
     },
   });
 };
