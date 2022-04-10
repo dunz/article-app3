@@ -6,6 +6,7 @@ import {RegisterScreen} from './RegisterScreen';
 import {LoginScreen} from './LoginScreen';
 import {MyArticlesScreen} from './MyArticlesScreen';
 import {useAuthLoadEffect} from '../hooks/useAuthLoadEffect';
+import {WriteScreen} from './WriteScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export const RootStack = () => {
       <Stack.Screen name="Login" component={LoginScreen} options={{title: '로그인'}} />
       <Stack.Screen name="MyArticles" component={MyArticlesScreen} options={{title: '내가 쓴 글'}} />
       <Stack.Screen name="Article" component={ArticleScreen} options={{title: '게시글'}} />
+      <Stack.Screen name="Write" component={WriteScreen} options={{title: '새 게시글 작성'}} />
     </Stack.Navigator>
   );
 };

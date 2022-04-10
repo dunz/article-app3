@@ -1,9 +1,14 @@
 import React from 'react';
 import {Platform, Pressable, StyleSheet, Text} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {useNavigation} from '@react-navigation/native';
+import {RootStackNavigationProp} from '../screens/types';
 
 export const WriteButton = () => {
-  const onPress = () => {};
+  const navigation = useNavigation<RootStackNavigationProp>();
+  const onPress = () => {
+    navigation.navigate('Write', {});
+  };
   return (
     <Pressable
       style={({pressed}) => [styles.button, Platform.OS === 'ios' && pressed && styles.pressed]}
