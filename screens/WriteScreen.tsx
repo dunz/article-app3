@@ -5,7 +5,7 @@ import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {RootStackNavigationProp} from './types';
 import {writeArticle} from '../api/articles';
-import {useMutation} from 'react-query';
+import {useMutation, useQueryClient} from 'react-query';
 
 export const WriteScreen: VFC = () => {
   const {top} = useSafeAreaInsets();
@@ -13,8 +13,10 @@ export const WriteScreen: VFC = () => {
   const [body, setBody] = useState('');
 
   const navigation = useNavigation<RootStackNavigationProp>();
+  const queryClient = useQueryClient();
   const {mutate: write} = useMutation(writeArticle, {
     onSuccess() {
+      queryClient.invalidateQueries('articles');
       navigation.goBack();
     },
   });
