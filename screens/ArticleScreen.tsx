@@ -9,6 +9,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ArticleView} from '../components/ArticleView';
 import {CommentItem} from '../components/CommentItem';
 import {useUserState} from '../contexts/UserContext';
+import {CommentInput} from '../components/CommentInput';
 
 export const ArticleScreen: VFC = () => {
   const {params} = useRoute<ArticleScreenRouteProp>();
@@ -37,7 +38,10 @@ export const ArticleScreen: VFC = () => {
       )}
       keyExtractor={item => item.id.toString()}
       ListHeaderComponent={
-        <ArticleView title={title} body={body} publishedAt={published_at} username={user.username} id={id} isMyArticle={isMyArticle} />
+        <>
+          <ArticleView title={title} body={body} publishedAt={published_at} username={user.username} id={id} isMyArticle={isMyArticle} />
+          <CommentInput articleId={id} />
+        </>
       }
     />
   );
