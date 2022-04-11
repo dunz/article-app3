@@ -1,20 +1,25 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useEffect, useState, VFC} from 'react';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {useCallback, useEffect, useMemo, useState, VFC} from 'react';
 import {KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput} from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {RootStackNavigationProp} from './types';
-import {writeArticle} from '../api/articles';
+import {RootStackNavigationProp, WriteScreenRouteProp} from './types';
+import {modifyArticle, writeArticle} from '../api/articles';
 import {InfiniteData, useMutation, useQueryClient} from 'react-query';
 import {Article} from '../api/types';
 
 export const WriteScreen: VFC = () => {
-  const {top} = useSafeAreaInsets();
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-
+  const {params} = useRoute<WriteScreenRouteProp>();
   const navigation = useNavigation<RootStackNavigationProp>();
   const queryClient = useQueryClient();
+  const cachedArticle = useMemo(
+    () => (params.articleId ? queryClient.getQueryData<Article>(['article', params.articleId]) : null),
+    [queryClient, params.articleId],
+  );
+  const {top} = useSafeAreaInsets();
+  const [title, setTitle] = useState(cachedArticle?.title ?? '');
+  const [body, setBody] = useState(cachedArticle?.body ?? '');
+
   // const articles = queryClient.getQueryData<Article[]>('articles') ?? [];
   const {mutate: write} = useMutation(writeArticle, {
     onSuccess(article) {
@@ -37,9 +42,32 @@ export const WriteScreen: VFC = () => {
       navigation.goBack();
     },
   });
+
+  const {mutate: modify} = useMutation(modifyArticle, {
+    onSuccess(article) {
+      queryClient.setQueryData<InfiniteData<Article[]>>('articles', data => {
+        if (!data) {
+          return {pageParams: [], pages: []};
+        }
+        return {
+          pageParams: data!.pageParams,
+          pages: data!.pages.map(page =>
+            page.find(a => a.id === params.articleId) ? page.map(a => (a.id === params.articleId ? article : a)) : page,
+          ),
+        };
+      });
+      queryClient.setQueryData(['article', params.articleId], article);
+      navigation.goBack();
+    },
+  });
+
   const onSubmit = useCallback(() => {
-    write({title, body});
-  }, [write, title, body]);
+    if (params.articleId) {
+      modify({id: params.articleId, title, body});
+    } else {
+      write({title, body});
+    }
+  }, [modify, write, title, body, params.articleId]);
 
   useEffect(() => {
     navigation.setOptions({

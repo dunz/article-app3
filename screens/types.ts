@@ -12,6 +12,7 @@ export type MainTabNavigationScreenParams = NavigatorScreenParams<MainTabParamLi
 export type MainTabNavigationProp = CompositeNavigationProp<RootStackNavigationProp, BottomTabNavigationProp<MainTabParamList>>;
 export type MainTabRouteProp = RouteProp<RootStackParamList, 'MainTab'>;
 export type ArticleScreenRouteProp = RouteProp<RootStackParamList, 'Article'>;
+export type WriteScreenRouteProp = RouteProp<RootStackParamList, 'Write'>;
 
 /* RootStack */
 export type RootStackParamList = {
