@@ -1,14 +1,17 @@
 import React, {VFC} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import {ArticleActionButtons} from './ArticleActionButtons';
 
 interface ArticleViewProps {
   title: string;
   body: string;
   publishedAt: string;
   username: string;
+  id: number;
+  isMyArticle: boolean;
 }
 
-export const ArticleView: VFC<ArticleViewProps> = ({title, body, publishedAt, username}) => {
+export const ArticleView: VFC<ArticleViewProps> = ({title, body, publishedAt, username, id, isMyArticle}) => {
   const formattedDate = new Date(publishedAt).toLocaleString();
 
   return (
@@ -17,6 +20,7 @@ export const ArticleView: VFC<ArticleViewProps> = ({title, body, publishedAt, us
       <Text style={styles.username}>{username}</Text>
       <Text style={styles.date}>{formattedDate}</Text>
       <View style={styles.separator} />
+      {isMyArticle && <ArticleActionButtons articleId={id} />}
       <Text>{body}</Text>
     </View>
   );

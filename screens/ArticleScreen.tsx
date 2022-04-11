@@ -8,10 +8,12 @@ import {getComments} from '../api/comments';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ArticleView} from '../components/ArticleView';
 import {CommentItem} from '../components/CommentItem';
+import {useUserState} from '../contexts/UserContext';
 
 export const ArticleScreen: VFC = () => {
   const {params} = useRoute<ArticleScreenRouteProp>();
   const {id} = params;
+  const [currentUser] = useUserState();
 
   const articleQuery = useQuery(['article', id], () => getArticle(id));
   const commentsQuery = useQuery(['comments', id], () => getComments(id));
@@ -23,6 +25,7 @@ export const ArticleScreen: VFC = () => {
   }
 
   const {title, body, published_at, user} = articleQuery.data;
+  const isMyArticle = currentUser?.id === user.id;
 
   return (
     <FlatList
@@ -33,7 +36,9 @@ export const ArticleScreen: VFC = () => {
         <CommentItem id={item.id} message={item.message} publishedAt={item.published_at} username={item.user.username} />
       )}
       keyExtractor={item => item.id.toString()}
-      ListHeaderComponent={<ArticleView title={title} body={body} publishedAt={published_at} username={user.username} />}
+      ListHeaderComponent={
+        <ArticleView title={title} body={body} publishedAt={published_at} username={user.username} id={id} isMyArticle={isMyArticle} />
+      }
     />
   );
 };
