@@ -28,3 +28,8 @@ export const modifyArticle = async (params: {id: number; title: string; body: st
   const response = await client.put<Article>(`/articles/${id}`, {title, body});
   return response.data;
 };
+
+export const deleteArticle = async (id: number) => {
+  await client.delete<Article>(`/articles/${id}`);
+  return null;
+};
