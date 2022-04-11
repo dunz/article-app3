@@ -4,7 +4,7 @@ import {useRoute} from '@react-navigation/native';
 import {ArticleScreenRouteProp} from './types';
 import {useMutation, useQuery, useQueryClient} from 'react-query';
 import {getArticle} from '../api/articles';
-import {deleteComment, getComments} from '../api/comments';
+import {deleteComment, getComments, modifyComment} from '../api/comments';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ArticleView} from '../components/ArticleView';
 import {CommentItem} from '../components/CommentItem';
@@ -12,6 +12,7 @@ import {useUserState} from '../contexts/UserContext';
 import {CommentInput} from '../components/CommentInput';
 import {AskDialog} from '../components/AskDialog';
 import {Comment} from '../api/types';
+import {CommentModal} from '../components/CommentModal';
 
 export const ArticleScreen: VFC = () => {
   const {params} = useRoute<ArticleScreenRouteProp>();
@@ -19,6 +20,7 @@ export const ArticleScreen: VFC = () => {
   const [currentUser] = useUserState();
   const [selectedCommentId, setSelectedCommentId] = useState<number | null>(null);
   const [askRemoveComment, setAskRemoveComment] = useState(false);
+  const [modifying, setModifying] = useState(false);
 
   const articleQuery = useQuery(['article', id], () => getArticle(id));
   const commentsQuery = useQuery(['comments', id], () => getComments(id));
@@ -31,6 +33,13 @@ export const ArticleScreen: VFC = () => {
       queryClient.setQueryData<Comment[]>(['comments', id], comments => (comments ? comments.filter(c => c.id !== selectedCommentId) : []));
     },
   });
+  const {mutate: modify} = useMutation(modifyComment, {
+    onSuccess(comment) {
+      queryClient.setQueryData<Comment[]>(['comments', id], comments =>
+        comments ? comments.map(c => (c.id === selectedCommentId ? comment : c)) : [],
+      );
+    },
+  });
 
   if (!articleQuery.data || !commentsQuery.data) {
     return <ActivityIndicator size="large" style={styles.spinner} color="black" />;
@@ -38,6 +47,7 @@ export const ArticleScreen: VFC = () => {
 
   const {title, body, published_at, user} = articleQuery.data;
   const isMyArticle = currentUser?.id === user.id;
+  const selectedComment = commentsQuery.data?.find(comment => comment.id === selectedCommentId);
 
   const onRemove = (commentId: number) => {
     setSelectedCommentId(commentId);
@@ -53,8 +63,21 @@ export const ArticleScreen: VFC = () => {
   const onCancelRemove = () => {
     setAskRemoveComment(false);
   };
-
-  const onModify = (commendId: number) => {};
+  const onModify = (commentId: number) => {
+    setSelectedCommentId(commentId);
+    setModifying(true);
+  };
+  const onSubmitModify = (message: string) => {
+    modify({
+      id: selectedCommentId!,
+      articleId: id,
+      message,
+    });
+    setModifying(false);
+  };
+  const onCancelModify = () => {
+    setModifying(false);
+  };
 
   return (
     <>
@@ -91,6 +114,7 @@ export const ArticleScreen: VFC = () => {
         onConfirm={onConfirmRemove}
         onClose={onCancelRemove}
       />
+      <CommentModal visible={modifying} onClose={onCancelModify} onSubmit={onSubmitModify} initialMessage={selectedComment?.message} />
     </>
   );
 };
